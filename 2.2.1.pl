@@ -26,7 +26,7 @@ course(physics,time(monday,8,11),lecturer(Jane, Doe),location('science building'
 schedule_conflict(Time,Location,Course1,Course2) :-
 	course(Course1,Time,_,Location),
 	course(Course2,Time2,_,Location2),
-	Course1 \= Course2,
+	course(Course1,Time,_,Location) \= course(Course2,Time2,_,Location2),
 	Location = Location2,
 	day_time_overlap(Time,Time2).
 
@@ -38,3 +38,4 @@ time_overlap(time_duration(Start1,Finish1),time_duration(Start2,_)) :-
 	between(Start1,Finish1,Start2).
 time_overlap(time_duration(Start1,Finish1),time_duration(_,Finish2)) :-
 	between(Start1,Finish1,Finish2).
+
