@@ -1,35 +1,33 @@
 % i
 
-%course(complexity,time(monday,9,11),lecturer(david,harel),location(feinberg,a)).
-%course(statistics,time(wednesday,16,17),lecturer(mike,smith),location(310,10)).
-course(complexity,time(monday,7,11),lecturer(spongebob,squarepants),location(310,broom_closet)).
-course(complexity,time(monday,8,11),lecturer(spongebob,squarepants),location(310,broom_closet)).
+course(complexity,time(monday,9,11),lecturer(david,harel),location(feinberg,a)).
+course(statistics,time(wednesday,16,17),lecturer(mike,smith),location(310,10)).
 
-lecturer(Lecturer,Course) :- course(Course,Time,Lecturer,Location).
+lecturer(Lecturer,Course) :- course(Course,_,Lecturer,_).
 duration(Course,Length) :-
-	course(Course,time(Day,Start,Finish),Lecturer,Location),
-	plus(Start,Length,Finish).
-teaches(Lecturer,Day) :- course(Course,time(Day,Start,Finish),Lecturer,Location).
+	course(Course,time(_,Start,Finish),_,_),
+	Finish is Start + Length.
+teaches(Lecturer,Day) :- course(_,time(Day,_,_),Lecturer,_).
 occupied(Room,Day,Time) :-
-	course(Course,time(Day,Start,Finish),Lecturer,location(building,Room)),
+	course(_,time(Day,Start,Finish),_,location(_,Room)),
 	between(Start,Finish,Time).
 
-location(Course,Building) :- course(Course,Time,Lecturer,location(Building,Room)).
+%location(Course,Building) :- course(Course,_,_,location(Building,_)).
 
 busy(Lecturer,Time) :-
-	course(Course,time(Day,Start,Finish),Lecturer,Location),
+	course(_,time(_,Start,Finish),Lecturer,_),
 	between(Start,Finish,Time).
 
 % ii
 
+course(math,time(monday,7,11),lecturer(John, Doe),location('science building', 1)).
+course(physics,time(monday,8,11),lecturer(Jane, Doe),location('science building', 1)).
+
 schedule_conflict(Time,Location,Course1,Course2) :-
+	course(Course1,Time,_,Location),
+	course(Course2,Time2,_,Location2),
 	Course1 \= Course2,
-	Course1 = course(_,Time1,_,Location1),
-	Course2 = course(_,Time2,_,Location2),
-	Location1 = Location2,
-	Location2 = Location,
-	day_time_overlap(Time1,Time2),
-	day_time_overlap(Time,Time1),
+	Location = Location2,
 	day_time_overlap(Time,Time2).
 
 day_time_overlap(time(Day1,Start1,Finish1),time(Day2,Start2,Finish2)) :-
